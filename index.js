@@ -58,7 +58,7 @@
         for (let i = 0; i <= 100; i++) {
           player.setVolume(i);
 
-          const normalizedTempVolume = Number(tempVolume.toFixed(2));
+          const normalizedTempVolume = normalizeVolume(tempVolume);
 
           videoToPlayerVolumeMap[normalizedTempVolume] = i;
           playerToVideoVolumeMap[i] = normalizedTempVolume;
