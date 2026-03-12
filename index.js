@@ -31,7 +31,7 @@
     const playerToVideoVolumeMap = {};
 
     function log(message, ...args) {
-      console.log(`[${APP_NAME}] ${message}:\n`, ...args);
+      console.log(`[${APP_NAME}] ${message}\n`, ...args);
     }
 
     function recalculateVolumeMaps() {
