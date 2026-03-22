@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         YouTube KDE volume sync
+// @name         YouTube volume sync
 // @description  Fixes volume desync between KDE Connect via Plasma integration and youtube player
 // @match        *://*.youtube.com/*
 // @grant        none
 // ==/UserScript==
 
 (function () {
-  const APP_NAME = "YouTube KDE volume sync";
+  const APP_NAME = "YouTube volume sync";
 
   const VIDEO_QUERY = "video.html5-main-video";
   const PLAYER_QUERY = "#movie_player";
