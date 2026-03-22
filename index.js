@@ -38,14 +38,14 @@
 
     if (section.dataset.volumeSync) return;
 
-    section.dataset.volumeSync = "true";
-
     /** @type {HTMLVideoElement} */ const video =
       section.querySelector(VIDEO_QUERY);
     /** @type {HTMLDivElement} */ const player =
       section.querySelector(PLAYER_QUERY);
 
     if (!video || !player) return;
+
+    section.dataset.volumeSync = "true";
 
     const originalVideoVolumeProperty = Object.getOwnPropertyDescriptor(
       HTMLMediaElement.prototype,
