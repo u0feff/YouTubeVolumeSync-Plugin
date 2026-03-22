@@ -35,21 +35,21 @@
     }
 
     /**
-     * @param {number} volume
+     * @param {number} videoVolume
      * @returns {number}
      */
-    function normalizeVolume(volume) {
-      return Number(volume.toFixed(2));
+    function normalizeVideoVolume(videoVolume) {
+      return Number(videoVolume.toFixed(2));
     }
 
     function recalculateVolumeMaps() {
-      const currentVolume = player.getVolume();
-      let tempVolume;
+      const currentPlayerVolume = player.getVolume();
+      let tempVideoVolume;
 
       Object.defineProperty(video, "volume", {
-        get: getVolume,
+        get: getVideoVolume,
         set: function (value) {
-          tempVolume = value;
+          tempVideoVolume = value;
         },
         configurable: true,
       });
@@ -58,23 +58,23 @@
         for (let i = 0; i <= 100; i++) {
           player.setVolume(i);
 
-          const normalizedTempVolume = normalizeVolume(tempVolume);
+          const normalizedVideoVolume = normalizeVideoVolume(tempVideoVolume);
 
-          videoToPlayerVolumeMap[normalizedTempVolume] = i;
-          playerToVideoVolumeMap[i] = normalizedTempVolume;
+          videoToPlayerVolumeMap[normalizedVideoVolume] = i;
+          playerToVideoVolumeMap[i] = normalizedVideoVolume;
         }
 
         Object.defineProperty(video, "volume", {
-          get: getVolume,
+          get: getVideoVolume,
           set: function () {},
           configurable: true,
         });
 
-        player.setVolume(currentVolume);
+        player.setVolume(currentPlayerVolume);
       } finally {
         Object.defineProperty(video, "volume", {
-          get: getVolume,
-          set: setVolume,
+          get: getVideoVolume,
+          set: setVideoVolume,
           configurable: true,
         });
       }
@@ -91,17 +91,17 @@
     }
 
     /**
-     * @param {number} volume
+     * @param {number} videoVolume
      * @returns {number?}
      */
-    function tryCalculatePlayerVolume(volume) {
-      const normalizedVolume = normalizeVolume(volume);
+    function tryCalculatePlayerVolume(videoVolume) {
+      const normalizedVideoVolume = normalizeVideoVolume(videoVolume);
 
-      if (normalizedVolume in videoToPlayerVolumeMap)
-        return videoToPlayerVolumeMap[normalizedVolume];
+      if (normalizedVideoVolume in videoToPlayerVolumeMap)
+        return videoToPlayerVolumeMap[normalizedVideoVolume];
 
-      if (normalizedVolume <= playerToVideoVolumeMap[0]) return 0;
-      if (normalizedVolume >= playerToVideoVolumeMap[100]) return 100;
+      if (normalizedVideoVolume <= playerToVideoVolumeMap[0]) return 0;
+      if (normalizedVideoVolume >= playerToVideoVolumeMap[100]) return 100;
 
       return null;
     }
@@ -109,25 +109,25 @@
     /**
      * @returns {number}
      */
-    function getVolume() {
+    function getVideoVolume() {
       return originalVideoVolumeProperty.get.call(this);
     }
 
     /**
-     * @param {number} volume
+     * @param {number} videoVolume
      */
-    function setVolume(volume) {
-      const normalizedVolume = normalizeVolume(volume);
+    function setVideoVolume(videoVolume) {
+      const normalizedVideoVolume = normalizeVideoVolume(videoVolume);
 
       if (
-        !(normalizedVolume in videoToPlayerVolumeMap) &&
-        normalizedVolume >= playerToVideoVolumeMap[0] &&
-        normalizedVolume <= playerToVideoVolumeMap[100]
+        !(normalizedVideoVolume in videoToPlayerVolumeMap) &&
+        normalizedVideoVolume >= playerToVideoVolumeMap[0] &&
+        normalizedVideoVolume <= playerToVideoVolumeMap[100]
       ) {
         log(
           `Recalculating volume maps. Video volume not in map`,
           `video volume:`,
-          normalizedVolume,
+          normalizedVideoVolume,
           `, map:`,
           playerToVideoVolumeMap,
         );
@@ -138,15 +138,15 @@
       // Volume can be mapped to same value from different source value,
       // so we should check it vice versa too
       if (
-        videoToPlayerVolumeMap[normalizedVolume] !== player.getVolume() &&
-        playerToVideoVolumeMap[player.getVolume()] !== normalizedVolume
+        videoToPlayerVolumeMap[normalizedVideoVolume] !== player.getVolume() &&
+        playerToVideoVolumeMap[player.getVolume()] !== normalizedVideoVolume
       ) {
         log(
           `Recalculating volume maps. Map inconsistency for current player/video volume`,
           `video volume:`,
-          normalizedVolume,
+          normalizedVideoVolume,
           `, player volume: actual`,
-          videoToPlayerVolumeMap[normalizedVolume],
+          videoToPlayerVolumeMap[normalizedVideoVolume],
           `/ expected`,
           player.getVolume(),
           `, map:`,
@@ -156,7 +156,7 @@
         recalculateVolumeMaps();
       }
 
-      originalVideoVolumeProperty.set.call(this, volume);
+      originalVideoVolumeProperty.set.call(this, videoVolume);
     }
 
     /**
@@ -185,8 +185,8 @@
     }
 
     Object.defineProperty(video, "volume", {
-      get: getVolume,
-      set: setVolume,
+      get: getVideoVolume,
+      set: setVideoVolume,
       configurable: true,
     });
 
