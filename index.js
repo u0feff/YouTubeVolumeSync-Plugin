@@ -210,6 +210,12 @@
         return;
       }
 
+      // The problem is that volumechange event triggered by changes from both other extensions and YouTube,
+      // while the volume property triggered only when changes are made from YouTube.
+      // It's impossible to determine source of event from volumechange,
+      // so we're trying to determine this using volume map, which is based on YouTube's player volume normalization.
+      // If current player volume and video volume don't match,
+      // it means volume change was made on video, and we need to synchronize player's volume with video.
       if (Math.abs(oldPlayerVolume - newPlayerVolume) <= 1) return;
 
       log(
