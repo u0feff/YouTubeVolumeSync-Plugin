@@ -8,27 +8,52 @@
 (function () {
   const APP_NAME = "YouTube volume sync";
 
+  const SHORTS_SECTION = "ytd-shorts";
+  const MOVIE_SECTION = "ytd-watch-flexy";
+
   const VIDEO_QUERY = "video.html5-main-video";
-  const PLAYER_QUERY = "#movie_player";
+  const PLAYER_QUERY = ".html5-video-player";
 
   const PLAYER_VOLUME_KEY = "yt-player-volume";
   const EXPIRATION_PERIOD = 30 * 24 * 3600 * 1e3;
 
   function tryBindPlayer() {
-    const video = document.querySelector(VIDEO_QUERY);
-    const player = document.querySelector(PLAYER_QUERY);
+    /** @type {HTMLDivElement} */ const movieSection =
+      document.querySelector(MOVIE_SECTION);
+    /** @type {HTMLDivElement} */ const shortsSection =
+      document.querySelector(SHORTS_SECTION);
 
-    if (!video || !player || video.dataset.volumeSync) return;
+    /** @type {HTMLDivElement} */ let section;
 
-    video.dataset.volumeSync = "true";
+    if (movieSection && movieSection.hasAttribute("hidden") === false) {
+      section = movieSection;
+    } else if (
+      shortsSection &&
+      shortsSection.hasAttribute("hidden") === false
+    ) {
+      section = shortsSection;
+    } else {
+      return;
+    }
+
+    if (section.dataset.volumeSync) return;
+
+    section.dataset.volumeSync = "true";
+
+    /** @type {HTMLVideoElement} */ const video =
+      section.querySelector(VIDEO_QUERY);
+    /** @type {HTMLDivElement} */ const player =
+      section.querySelector(PLAYER_QUERY);
+
+    if (!video || !player) return;
 
     const originalVideoVolumeProperty = Object.getOwnPropertyDescriptor(
       HTMLMediaElement.prototype,
       "volume",
     );
 
-    const videoToPlayerVolumeMap = {};
-    const playerToVideoVolumeMap = {};
+    /** @type {Object<number, number>} */ const videoToPlayerVolumeMap = {};
+    /** @type {Object<number, number>} */ const playerToVideoVolumeMap = {};
 
     function log(message, ...args) {
       console.log(`[${APP_NAME}] ${message}\n`, ...args);
